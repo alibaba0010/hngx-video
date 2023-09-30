@@ -2,7 +2,8 @@ import express, { json } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-import multer from "multer";
+import multer from "multer"
+import fs from "fs"
 dotenv.config();
 
 const app = express();
@@ -41,6 +42,25 @@ app.post('/upload', (req, res) => {
     });
 });
 
+// Endpoint to get all videos from the disk
+app.get('/videos', (req, res) => {
+    // Directory where videos are uploaded
+    const directory = './uploads';
+
+    // Read the contents of the directory
+    fs.readdir(directory, (err, files) => {
+        if (err) {
+            console.error('Error reading directory:', err);
+            res.status(500).send('Error reading directory.');
+        } else {
+            // Filter out non-video files (for demonstration purposes, assuming videos have .mp4 extension)
+            const videoFiles = files.filter(file => path.extname(file) === '.mp4');
+
+            // Send the list of video files to the client
+            res.json(videoFiles);
+        }
+    });
+});
 app.use(json()).use("/uploads", express.static((__dirname, "uploads")));
 
 const PORT = process.env.PORT || 2001;
