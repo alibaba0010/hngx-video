@@ -2,69 +2,44 @@ import express, { json } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-import multer from "multer"
-import fs from "fs"
+import connectDB from "./db.js";
+import uploadRouter from "./upload/route.js";
+import fs from "fs";
 dotenv.config();
 
 const app = express();
-
-const storage = multer.diskStorage({
-  destination: "./uploads",
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 100000000 }, // Limit file size to 100MB (adjust as needed)
-}).single("video"); // 'video' should match the name attribute in the form input
+const uri = process.env.MONGO_URL;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
-// Handle video upload
-app.post('/upload', (req, res) => {
-    upload(req, res, (err) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send('Error uploading file.');
-        } else {
-            const videoPath = req.file.path;
-            // You can save the videoPath to a database if needed
-            // For now, just send the path to the client for playing the video
-            res.send(`<video width="640" height="360" controls><source src="${videoPath}" type="video/mp4">Your browser does not support the video tag.</video>`);
-        }
-    });
-});
-
 // Endpoint to get all videos from the disk
-app.get('/videos', (req, res) => {
-    // Directory where videos are uploaded
-    const directory = './uploads';
+app.get("/videos", (req, res) => {
+  // Directory where videos are uploaded
+  const directory = "./uploads";
 
-    // Read the contents of the directory
-    fs.readdir(directory, (err, files) => {
-        if (err) {
-            console.error('Error reading directory:', err);
-            res.status(500).send('Error reading directory.');
-        } else {
-            // Filter out non-video files (for demonstration purposes, assuming videos have .mp4 extension)
-            const videoFiles = files.filter(file => path.extname(file) === '.mp4');
+  // Read the contents of the directory
+  fs.readdir(directory, (err, files) => {
+    if (err) {
+      console.error("Error reading directory:", err);
+      res.status(500).send("Error reading directory.");
+    } else {
+      // Filter out non-video files (for demonstration purposes, assuming videos have .mp4 extension)
+      const videoFiles = files.filter((file) => path.extname(file) === ".mp4");
 
-            // Send the list of video files to the client
-            res.json(videoFiles);
-        }
-    });
+      // Send the list of video files to the client
+      res.json(videoFiles);
+    }
+  });
 });
-app.use(json()).use("/uploads", express.static((__dirname, "uploads")));
+app
+  .use(json())
+  .use("/uploads", express.static((__dirname, "uploads")))
+  .use("/", uploadRouter);
 
 const PORT = process.env.PORT || 2001;
 (async () => {
+  await connectDB(uri);
   app.listen(PORT, () =>
     console.log(`Listening to port @ http://localhost:${PORT}`)
   );
