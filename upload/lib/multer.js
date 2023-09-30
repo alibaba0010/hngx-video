@@ -1,15 +1,18 @@
 import multer, { diskStorage } from "multer";
-import { extname } from "path";
+import { extname, join } from "path";
 
 export default multer({
   storage: diskStorage({
-    // destination: (req, file, cb) => {
-    //   console.log("In uploads");
-    //   cb(null, "../../uploads");
-    // },
-    // filename: (req, file, cb) => {
-    //   cb(null, Date.now() + extname(file.originalname));
-    // },
+    destination: (req, file, cb) => {
+      console.log("In uploads: ", file);
+      cb(null, "../../videos");
+    },
+    filename: (req, file, cb) => {
+      cb(
+        null,
+        new Date().toISOString().replace(/:/g, "-") + "-" + file.originalname
+      );
+    },
   }),
   fileFilter: (req, file, cb) => {
     let ext = extname(file.originalname);
