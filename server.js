@@ -2,7 +2,7 @@ import express, { json } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-
+import multer from "multer";
 dotenv.config();
 
 const app = express();
