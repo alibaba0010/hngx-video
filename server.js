@@ -13,25 +13,6 @@ const uri = process.env.MONGO_URL;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Endpoint to get all videos from the disk
-app.get("/videos", (req, res) => {
-  // Directory where videos are uploaded
-  const directory = "./uploads";
-
-  // Read the contents of the directory
-  fs.readdir(directory, (err, files) => {
-    if (err) {
-      console.error("Error reading directory:", err);
-      res.status(500).send("Error reading directory.");
-    } else {
-      // Filter out non-video files (for demonstration purposes, assuming videos have .mp4 extension)
-      const videoFiles = files.filter((file) => path.extname(file) === ".mp4");
-
-      // Send the list of video files to the client
-      res.json(videoFiles);
-    }
-  });
-});
 app
   .use(json())
   .use("/upload", express.static((__dirname, "./uploads")))
