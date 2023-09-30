@@ -36,7 +36,7 @@ app.post('/upload', (req, res) => {
             const videoPath = req.file.path;
             // You can save the videoPath to a database if needed
             // For now, just send the path to the client for playing the video
-            res.send(<video width="640" height="360" controls><source src="${videoPath}" type="video/mp4">Your browser does not support the video tag.</video>);
+            res.send(`<video width="640" height="360" controls><source src="${videoPath}" type="video/mp4">Your browser does not support the video tag.</video>`);
         }
     });
 });
