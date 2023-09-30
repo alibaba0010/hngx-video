@@ -41,7 +41,7 @@ app.post('/upload', (req, res) => {
     });
 });
 
-app.use(json()).use("/uploads", express.static((__dirname, "uploads"));
+app.use(json()).use("/uploads", express.static((__dirname, "uploads")));
 
 const PORT = process.env.PORT || 2001;
 (async () => {
