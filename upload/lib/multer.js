@@ -1,6 +1,5 @@
 import multer, { diskStorage } from "multer";
 import { extname } from "path";
-
 export default multer({
   storage: diskStorage({}),
   fileFilter: (req, file, cb) => {
