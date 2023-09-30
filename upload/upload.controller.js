@@ -6,9 +6,7 @@ export const uploadVideo = async (req, res) => {
   const { file } = req;
   try {
     const fileData = await addVideo(file);
-    console.log("File data: ", fileData);
     const video = await Upload.create({ video: fileData });
-    console.log("Video: ", video);
     const { __v, ...others } = video._doc;
 
     res.status(201).json(others);
