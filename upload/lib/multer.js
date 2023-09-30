@@ -1,11 +1,14 @@
 import multer, { diskStorage } from "multer";
-import { extname, join } from "path";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default multer({
   storage: diskStorage({
     destination: (req, file, cb) => {
-      console.log("In uploads: ", file);
-      cb(null, "../../videos");
+      cb(null, path.join(__dirname, "../../videos"));
     },
     filename: (req, file, cb) => {
       cb(
@@ -15,7 +18,7 @@ export default multer({
     },
   }),
   fileFilter: (req, file, cb) => {
-    let ext = extname(file.originalname);
+    let ext = path.extname(file.originalname);
     if (
       ext !== ".mp4" &&
       ext !== ".mkv" &&
