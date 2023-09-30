@@ -1,8 +1,8 @@
 import express, { json } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import dotenv from "dotenv";
 
-import config from "config";
 dotenv.config();
 
 export default cloudinary.config({
