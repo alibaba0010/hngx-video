@@ -3,12 +3,11 @@ import Upload from "./Upload.js";
 // Configuration
 
 export const uploadVideo = async (req, res) => {
-  console.log("In controller:", req.file);
   const { file } = req;
-  let fileData = {};
   try {
-    await addVideo(file);
-    const video = await Upload.create({ fileData });
+    const fileData = await addVideo(file);
+    console.log("File data: ", fileData);
+    const video = await Upload.create({ video: fileData });
     console.log("Video: ", video);
     const { __v, ...others } = video._doc;
 

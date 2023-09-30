@@ -10,12 +10,12 @@ export default cloudinary.config({
 export const addVideo = async (file) => {
   if (file) {
     // Save video to cloudinary
-    console.log("File Path: ", file.path);
+    let fileData = {};
+
     const uploadedFile = await cloudinary.uploader.upload(file.path, {
       folder: "HNG Video",
       resource_type: "video",
     });
-    console.log("Uploaded file: ", uploadedFile);
     fileData = {
       id: uploadedFile.public_id,
       fileName: file.originalname,
@@ -23,5 +23,6 @@ export const addVideo = async (file) => {
       fileType: file.mimetype,
       // fileSize: fileSizeFormatter(file.size, 2),
     };
+    return fileData;
   }
 };
