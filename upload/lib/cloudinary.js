@@ -21,7 +21,6 @@ export const addVideo = async (file) => {
       fileName: file.originalname,
       filePath: uploadedFile.secure_url,
       fileType: file.mimetype,
-      // fileSize: fileSizeFormatter(file.size, 2),
     };
     return fileData;
   }

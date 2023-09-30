@@ -34,7 +34,7 @@ app.get("/videos", (req, res) => {
 });
 app
   .use(json())
-  .use("/uploads", express.static((__dirname, "uploads")))
+  .use("/", express.static((__dirname, "uploads")))
   .use("/", uploadRouter);
 
 const PORT = process.env.PORT || 2001;

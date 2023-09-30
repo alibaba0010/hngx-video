@@ -1,7 +1,16 @@
 import multer, { diskStorage } from "multer";
 import { extname } from "path";
+
 export default multer({
-  storage: diskStorage({}),
+  storage: diskStorage({
+    // destination: (req, file, cb) => {
+    //   console.log("In uploads");
+    //   cb(null, "../../uploads");
+    // },
+    // filename: (req, file, cb) => {
+    //   cb(null, Date.now() + extname(file.originalname));
+    // },
+  }),
   fileFilter: (req, file, cb) => {
     let ext = extname(file.originalname);
     if (
@@ -15,12 +24,6 @@ export default multer({
       return;
     }
     cb(null, true);
-  },
-  destination: (req, file, cb) => {
-    cb(null, "../../uploads");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 // export const storage = multer.diskStorage({
