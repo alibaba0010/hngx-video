@@ -44,7 +44,7 @@ export const createFile = async (req, res) => {
   const id = uuidv4();
   videoId = await Upload.create({ id });
   console.log("http://127.0.0.1:5500/: ", videoId);
-  res.status(201).json({ videoId });
+  res.status(201).json({ videoId: videoId.id });
 };
 
 async function transcribe(videoPath, id) {
@@ -79,7 +79,6 @@ async function transcribe(videoPath, id) {
   }
 }
 const saveVideoChunks = async (req, res, sta = true) => {
-  let chunk = [];
   try {
     const fileData = req.file;
     console.log("File Data: ", fileData);
@@ -111,11 +110,14 @@ export const saveVideoInterval = async (req, res) => {
 export const saveVideoFinally = async (req, res) => {
   await saveVideoChunks(req, res, (sta = false));
   const videoBuffer = Buffer.concat(videoChunks);
-  const videoPath = path.join(__dirname, "../videos", `${videoId}.webm`);
+  const folderPath = path.join(__dirname, "../videos", `${videoId}.webm`);
+  const videoPath = folderPath + ".webm";
   console.log("VIdeo Path: ", videoPath);
-  fs.writeFileSync(videoPath, videoBuffer);
+  await fs.writeFileSync(videoPath, videoBuffer);
 
   videoChunks = [];
+  console.log("Save All with id: ", videoId);
+  await transcribe(folderPath, videoId);
   console.log("Video Id: ", videoId);
   res.status(200).json({ msg: "Video stopped", videoId });
 };
