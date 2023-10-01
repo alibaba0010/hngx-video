@@ -10,9 +10,10 @@ const uri = process.env.MONGO_URL;
 
 app
   .use(
-    cors({
-      origin: "http://127.0.0.1:5500",
-    })
+    cors()
+    // {
+    //   origin: "http://127.0.0.1:5500",
+    // })
   )
   .use(json())
   .use("/", uploadRouter);

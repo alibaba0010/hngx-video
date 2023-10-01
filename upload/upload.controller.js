@@ -19,7 +19,7 @@ const openai = new OpenAI({
 let videoChunks = [];
 let videoId;
 export const hello = (req, res) => {
-  res.send("Hello WOrld");
+  res.status(200).json({ message: "Hello WOrld" });
 };
 export const createFile = async (req, res) => {
   videoChunks = [];
