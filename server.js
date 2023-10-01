@@ -1,26 +1,20 @@
 import express, { json } from "express";
-import path from "path";
-import { fileURLToPath } from "url";
+
 import dotenv from "dotenv";
 import connectDB from "./db.js";
 import uploadRouter from "./upload/route.js";
-import fs from "fs";
+import { connectRabbitMQ } from "./rabitmq/connection.js";
 dotenv.config();
 
 const app = express();
 const uri = process.env.MONGO_URL;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-app
-  .use(json())
-  .use("/upload", express.static((__dirname, "./uploads")))
-  .use("/", uploadRouter);
+app.use(json()).use("/", uploadRouter);
 
 const PORT = process.env.PORT || 2001;
 (async () => {
   await connectDB(uri);
+  await connectRabbitMQ();
   app.listen(PORT, () =>
     console.log(`Listening to port @ http://localhost:${PORT}`)
   );

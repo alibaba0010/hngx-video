@@ -1,9 +1,22 @@
 import { Router } from "express";
-import { getVideo, getVideos, uploadVideo } from "./upload.controller.js";
+import {
+  createFile,
+  getVideo,
+  saveVideoInterval,
+  saveVideoFinally,
+} from "./upload.controller.js";
 import storage from "./lib/multer.js";
 const uploadRouter = Router();
 uploadRouter
-  .post("/", storage.single("video"), uploadVideo)
-  .get("/videos", getVideos)
+  .post("/", createFile)
+  .post("/videos", saveVideoInterval) //storage.single("video"),
+  .post("/videos/end", saveVideoFinally)
   .get("/videos/:id", getVideo);
 export default uploadRouter;
+
+// .get("/", (req, res) => {
+//   res.redirect(`/${uuidv4()}`);
+// })
+// .get("/:room", (req, res, next) => {
+//   res.render("room", { roomId: req.params.room });
+// });

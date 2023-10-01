@@ -4,9 +4,8 @@ const { Schema, model, Types } = pkg;
 const schema = Schema;
 
 var UploadSchema = new schema({
-  video: {
-    type: Object,
-    required: [true, "Please provide an video"],
+  id: {
+    type: String,
   },
 });
 
