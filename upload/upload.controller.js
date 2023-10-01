@@ -18,12 +18,10 @@ const openai = new OpenAI({
 
 let videoChunks = [];
 let videoId;
-export const hello = (req, res) => {
-  res.status(200).json({ message: "Hello WOrld" });
-};
+
 export const createFile = async (req, res) => {
   videoChunks = [];
-  id = uuidv4();
+  const id = uuidv4();
   videoId = await Upload.create({ id });
   console.log("http://127.0.0.1:5500/: ", videoId);
   res.status(201).json({ videoId });
