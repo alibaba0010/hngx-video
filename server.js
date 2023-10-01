@@ -3,7 +3,6 @@ import express, { json } from "express";
 import dotenv from "dotenv";
 import connectDB from "./db.js";
 import uploadRouter from "./upload/route.js";
-import { connectRabbitMQ } from "./rabitmq/connection.js";
 dotenv.config();
 
 const app = express();
@@ -14,7 +13,6 @@ app.use(json()).use("/", uploadRouter);
 const PORT = process.env.PORT || 2001;
 (async () => {
   await connectDB(uri);
-  await connectRabbitMQ();
   app.listen(PORT, () =>
     console.log(`Listening to port @ http://localhost:${PORT}`)
   );
