@@ -1,13 +1,14 @@
+import ffmpegPath from "@ffmpeg-installer/ffmpeg";
 import Upload from "./Upload.js";
 import OpenAI from "openai";
 import { v4 as uuidv4 } from "uuid";
 import dotenv from "dotenv";
-import axios from "axios";
 import fs from "fs";
-import ffmpeg from "ffmpeg";
+import ffmpeg from "fluent-ffmpeg";
 import path from "path";
 import { fileURLToPath } from "url";
-
+const fffmegPath = ffmpegPath.path;
+ffmpeg.setFfmpegPath(fffmegPath);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -18,6 +19,25 @@ const openai = new OpenAI({
 
 let videoChunks = [];
 let videoId;
+const count = 1;
+
+const convert2audio = (videoPath, outputPath) => {
+  return new Promise((resolve, reject) => {
+    ffmpeg(videoPath)
+      .output(outputPath)
+      .audioCodec("pcm_s16le")
+      .toFormat("wav")
+      .on("end", () => {
+        console.log("Conversion complete");
+        resolve();
+      })
+      .on("error", (err) => {
+        console.log("Conversion error", err);
+        reject(err);
+      })
+      .run();
+  });
+};
 
 export const createFile = async (req, res) => {
   videoChunks = [];
@@ -27,24 +47,56 @@ export const createFile = async (req, res) => {
   res.status(201).json({ videoId });
 };
 
-async function transcribe(videoPath) {
-  const transcription = await openai.audio.transcriptions.create({
-    file: fs.createReadStream(videoPath), //file path
-    model: "whisper-1",
-  });
+async function transcribe(videoPath, id) {
+  if (!fs.existsSync(`${videoPath}.wav`)) {
+    const filePath = `${videoPath}.webm`;
 
-  console.log(transcription.text);
+    await convert2audio(videoPath, `${videoPath}.wav`)
+      .then(() => {
+        console.log("Conversion successfull");
+      })
+      .catch((err) => {
+        console.log("An error occured: ", err);
+      });
 
-  return transcription;
+    const audioFile = {
+      buffer: fs.readFileSync(`${videoPath}.wav`),
+      mimetype: "audio/wav",
+    };
+
+    const transData = await deepgram.transcription.preRecorded(audioFile, {
+      punctuation: true,
+      utterances: true,
+    });
+    const srtTranscript = await transData.toSRT();
+    await fs.writeFileSync(`${videoPath}.srt`, srtTranscript, (err) => {
+      if (err) {
+        throw err;
+      } else {
+        console.log("Done!!!");
+      }
+    });
+  }
 }
-const saveVideoChunks = async (req, res) => {
+const saveVideoChunks = async (req, res, sta = true) => {
   let chunk = [];
+  try {
+    const fileData = req.file;
+    console.log("File Data: ", fileData);
+    videoChunks.push(fileData.buffer);
 
-  await req.on("data", (data) => {
-    chunk.push(data);
-    videoChunks.push(Buffer.concat(chunk));
-  });
-  console.log("Video chunk loaded: ", videoChunks);
+    if (sta) {
+      res.status(201).json({
+        msg: `${count} Chunk collected`,
+        videoID,
+      });
+      count++;
+
+      console.log("Video chunk loaded: ", videoChunks);
+    }
+  } catch (error) {
+    throw new Error("Invlaid file");
+  }
 };
 
 export const saveVideoInterval = async (req, res) => {
@@ -57,7 +109,7 @@ export const saveVideoInterval = async (req, res) => {
 };
 
 export const saveVideoFinally = async (req, res) => {
-  await saveVideoChunks(req, res);
+  await saveVideoChunks(req, res, (sta = false));
   const videoBuffer = Buffer.concat(videoChunks);
   const videoPath = path.join(__dirname, "../videos", `${videoId}.webm`);
   console.log("VIdeo Path: ", videoPath);
@@ -95,21 +147,11 @@ export const getVideo = async (req, res) => {
     // create video read stream for this particular chunk
     const videoStream = fs.createReadStream(videoPath, { start, end });
 
-    ffmpeg(`-hide_banner -y -i ${videoPath} ${videoPath}.wav`);
-
-    const audioFile = {
-      buffer: fs.readFileSync(`${videoPath}.wav`),
-      mimeType: "audio/wav",
-    };
-    console.log("Audio file: " + audioFile);
-    const transcription = await transcribe(audioFile);
-
-    // Stream the video chunk to the client
-    res.json({
-      status: "Video play successfully",
-      videoPath: `../videos/${id}.webm`,
-      transcription: transcription.results,
-    });
     videoStream.pipe(res);
   } catch (error) {}
+};
+
+const getSRTFile = (req, res) => {
+  const { id } = req.params;
+  res.status(200).sendFile(path.resolve(__dirname, `./videos/${id}.srt`));
 };
