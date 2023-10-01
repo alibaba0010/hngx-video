@@ -42,9 +42,9 @@ const convert2audio = (videoPath, outputPath) => {
 export const createFile = async (req, res) => {
   videoChunks = [];
   const id = uuidv4();
-  videoId = await Upload.create({ id });
-  console.log("http://127.0.0.1:5500/: ", videoId);
-  res.status(201).json({ videoId: videoId.id });
+  const videoID = await Upload.create({ id });
+  videoId = videoID.id;
+  res.status(201).json({ videoId });
 };
 
 async function transcribe(videoPath, id) {
@@ -81,6 +81,8 @@ async function transcribe(videoPath, id) {
 const saveVideoChunks = async (req, res, sta = true) => {
   try {
     const fileData = req.file;
+    console.log("Req: ", req);
+    console.log("Request: ", req.file);
     console.log("File Data: ", fileData);
     videoChunks.push(fileData.buffer);
 
