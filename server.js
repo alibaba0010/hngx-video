@@ -8,15 +8,8 @@ dotenv.config();
 const app = express();
 const uri = process.env.MONGO_URL;
 
-app
-  .use(
-    cors()
-    // {
-    //   origin: "http://127.0.0.1:5500",
-    // })
-  )
-  .use(json())
-  .use("/", uploadRouter);
+app.use(cors());
+app.use(json()).use(uploadRouter);
 
 const PORT = process.env.PORT || 2001;
 (async () => {
