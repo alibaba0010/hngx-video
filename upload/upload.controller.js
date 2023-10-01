@@ -62,8 +62,8 @@ export const saveVideoFinally = async (req, res) => {
   fs.writeFileSync(videoPath, videoBuffer);
 
   videoChunks = [];
-
-  res.status(200).json({ msg: "Video stopped", videoId, transcription });
+  console.log("Video Id: ", videoId);
+  res.status(200).json({ msg: "Video stopped", videoId });
 };
 
 //Get video with its id
