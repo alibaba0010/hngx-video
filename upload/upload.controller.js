@@ -44,6 +44,7 @@ export const createFile = async (req, res) => {
   const id = uuidv4();
   const videoID = await Upload.create({ id });
   videoId = videoID.id;
+  console.log("Video Id: ", videoId);
   res.status(201).json({ videoId });
 };
 
@@ -102,6 +103,7 @@ const saveVideoChunks = async (req, res, sta = true) => {
 
 export const saveVideoInterval = async (req, res) => {
   try {
+    console.log("In interval");
     await saveVideoChunks(req, res);
     res.status(201).json({ message: "Video Uploaded" });
   } catch (error) {
