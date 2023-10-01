@@ -13,10 +13,3 @@ uploadRouter
   .post("/videos/end", saveVideoFinally)
   .get("/videos/:id", getVideo);
 export default uploadRouter;
-
-// .get("/", (req, res) => {
-//   res.redirect(`/${uuidv4()}`);
-// })
-// .get("/:room", (req, res, next) => {
-//   res.render("room", { roomId: req.params.room });
-// });
