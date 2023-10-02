@@ -66,10 +66,7 @@ async function transcribe(videoPath, id) {
       mimetype: "audio/wav",
     };
 
-    const transData = await deepgram.transcription.preRecorded(audioFile, {
-      punctuation: true,
-      utterances: true,
-    });
+    const transData = await openai.Audio.transcribe("whisper-1", audioFile);
     const srtTranscript = await transData.toSRT();
     await fs.writeFileSync(`${videoPath}.srt`, srtTranscript, (err) => {
       if (err) {
