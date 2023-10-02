@@ -1,5 +1,6 @@
 import ffmpegPath from "@ffmpeg-installer/ffmpeg";
 import Upload from "./Upload.js";
+import busboy from "busboy";
 import OpenAI from "openai";
 import { v4 as uuidv4 } from "uuid";
 import dotenv from "dotenv";
@@ -81,6 +82,8 @@ async function transcribe(videoPath, id) {
 }
 const saveVideoChunks = async (req, res, sta = true) => {
   try {
+    const bb = busboy({ headers: req.headers });
+    console.log("BB: ", bb);
     const fileData = req.file;
     console.log("Req: ", req);
     console.log("Request: ", req.file);
