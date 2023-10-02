@@ -160,7 +160,17 @@ export const getVideo = async (req, res) => {
   } catch (error) {}
 };
 
-const getSRTFile = (req, res) => {
+export const getSrtFile = async (req, res) => {
   const { id } = req.params;
-  res.status(200).sendFile(path.resolve(__dirname, `./videos/${id}.srt`));
+  await fs.readFile(
+    path.resolve(__dirname, `../videos/${id}.srt`),
+    "utf8",
+    (err, data) => {
+      if (err) {
+        throw new NotFoundError("File cannot be found");
+      }
+
+      res.status(200).send(data);
+    }
+  );
 };
